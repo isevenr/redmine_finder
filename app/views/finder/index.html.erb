@@ -1,0 +1,51 @@
+<%= stylesheet_link_tag "finder.css", :plugin => 'redmine_finder' %>
+<%= javascript_include_tag "finder.js", :plugin => 'redmine_finder' %>
+<form action="<%= remove_attachments_path @project.id  %>" method="POST">
+    <%= token_tag nil %>
+    <h3>Manage Attachments</h3>
+    <hr/>
+
+    <table class="list issues sort-by-id sort-desc">
+        <thead>
+            <tr>
+                <th class="checkbox hide-when-print">
+                    <a href="#" title="Check all/Uncheck all" onclick="toggleIssuesSelection(this); return false;">
+                        <img src="/images/toggle_check.png" alt="Toggle check">
+                    </a>
+                </th>
+                <th>Content</th>
+                <th class="left">File Name</th>
+                <th class="left">Size</th>
+                <th class="left">Container</th>
+                <th>Date Uploaded</th>
+            </tr>
+        </thead>
+        <% @files.each do |file| %>
+            <tr class="<%= cycle('odd','even')%>">
+                <td class="checkbox hide-when-print">
+                    <input name="ids[]" value="<%= file.id %>" type="checkbox">
+                </td>
+                <td class="content">
+                    <% if file.image? && file.thumbnail({size: 50}) %>
+                        <%= thumbnail_tag(file) %> 
+                    <% else %>
+                        <span>Preview N/A</span>
+                    <% end %>
+                </td>
+                <td class="left filename">
+                    <%= link_to_attachment file, :class => 'icon icon-attachment', :download => true -%>
+                </td>
+                <td class="left size">
+                    <%= file.filesize/1024  %>kb
+                </td>
+                <td class="left container">
+                    <%= link_to "#{file.container_type} ##{file.container_id}", file.container %>
+                </td>
+                <td class="created_on">
+                    <%= file.created_on %>
+                </td>
+            </tr>
+        <% end %>
+    </table>
+    <input type="submit" value="Remove"></input>
+</form>
